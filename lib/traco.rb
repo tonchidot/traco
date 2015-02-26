@@ -21,7 +21,11 @@ module Traco
   #   Traco.column("title", :"pt-BR") # => :title_pt_br
   def self.column(attribute, locale)
     normalized_locale = locale.to_s.downcase.sub("-", "_")
-    "#{attribute}_#{normalized_locale}".to_sym
+    if normalized_locale=='ja'
+      "#{attribute}".to_sym
+    else
+      "#{attribute}_#{normalized_locale}".to_sym
+    end
   end
 
   # @example
@@ -30,7 +34,7 @@ module Traco
   #   Traco.split_localized_column("unlocalized")  # => nil
   def self.split_localized_column(column)
     match_data = column.to_s.match(COLUMN_RE)
-    return unless match_data
+    return 'ja' unless match_data
 
     attribute       = match_data[:attribute]
     primary_locale  = match_data[:primary]
