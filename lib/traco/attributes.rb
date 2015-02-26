@@ -27,7 +27,11 @@ module Traco
 
           columns_to_try = self.class._locale_columns_for_attribute(:#{attribute}, fallback)
           columns_to_try.each do |column|
-            value = send(column)
+            if column.to_s == "#{attribute}".to_s
+              value = read_attribute("#{attribute}")
+            else
+              value = send(column)
+            end
             return value if value.present?
           end
 
@@ -40,7 +44,11 @@ module Traco
       class_eval <<-EOM, __FILE__, __LINE__ + 1
         def #{attribute}=(value)
           column = Traco.column(:#{attribute}, I18n.locale).to_s + "="
-          send(column, value)
+          if column.to_s == "#{attribute}=".to_s
+            write_attribute("#{attribute}", value)
+          else
+            send(column, value)
+          end
         end
       EOM
     end
